@@ -10,11 +10,13 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.inject.Singleton;
 
 /**
  *
  * @author Artsk
  */
+@Singleton
 public class SingletonRMSBean {
 
     private Map<String, Object> map;

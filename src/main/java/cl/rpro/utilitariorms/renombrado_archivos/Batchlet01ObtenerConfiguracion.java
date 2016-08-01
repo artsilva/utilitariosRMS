@@ -8,11 +8,13 @@ package cl.rpro.utilitariorms.renombrado_archivos;
 import cl.rpro.utilitariorms.renombrado_archivos.helper.QueryHelper;
 import cl.rpro.utilitariorms.renombrado_archivos.model.ConfiguracionB2B;
 import cl.rpro.utilitariorms.renombrado_archivos.model.RetailerSeleccionados;
+import cl.rpro.utilitariorms.utils.DBUtils;
 import cl.rpro.utilitariorms.utils.SingletonRMSBean;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -30,11 +32,6 @@ import javax.sql.DataSource;
 @Named
 public class Batchlet01ObtenerConfiguracion extends AbstractBatchlet {
 
-    private DataSource dataSource = null;
-
-    private @Inject
-    SingletonRMSBean rmsBean;
-
     @Inject
     @BatchProperty
     private String jumbo;
@@ -51,14 +48,22 @@ public class Batchlet01ObtenerConfiguracion extends AbstractBatchlet {
     @BatchProperty
     private String tottus;
 
+    private DataSource dataSource;
+
+    private @Inject
+    SingletonRMSBean rmsBean;
+
     @Override
     public String process() throws Exception {
+        
         this.dataSource = QueryHelper.getDataSource();
         Connection conn = null;
         PreparedStatement ps = null;
-        ResultSet rs = null;
-        conn = dataSource.getConnection();
+        ResultSet rs = null;        
+        
         try {
+            Logger.getLogger(Batchlet01ObtenerConfiguracion.class.getName()).log(Level.INFO, "Obteniendo configuración de rutas de archivos.");
+            conn = dataSource.getConnection();
             ps = conn.prepareStatement(QueryHelper.SELECT_CONFIG_RENOMBRADO);
             rs = ps.executeQuery();
             List<ConfiguracionB2B> listaConfig = new ArrayList<>();
@@ -69,7 +74,7 @@ public class Batchlet01ObtenerConfiguracion extends AbstractBatchlet {
                 config.setRutaResp(rs.getString("ruta_zip_resp"));
                 config.setRutaInput(rs.getString("ruta_input"));
                 listaConfig.add(config);
-            }
+            }            
             rmsBean.setProperty("configuracion", listaConfig);
 
             List<RetailerSeleccionados> retailerSeleccionados = new ArrayList<>();
@@ -90,10 +95,20 @@ public class Batchlet01ObtenerConfiguracion extends AbstractBatchlet {
                     retailerSeleccionados.add(retailers);
                 }
             }
+            if (retailerSeleccionados.isEmpty()) {
+                Logger.getLogger(Batchlet01ObtenerConfiguracion.class.getName()).log(Level.INFO, "Para ejecutar el proceso es necesario marcar un retailer al menos");
+                return "FAILED";
+            }
             rmsBean.setProperty("retailerSeleccionados", retailerSeleccionados);
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Batchlet01ObtenerConfiguracion.class.getName()).log(Level.SEVERE, "Ocurrio un problema al obtener la configuración.", ex);
+            return "FAILED";
         } catch (Exception ex) {
             Logger.getLogger(Batchlet01ObtenerConfiguracion.class.getName()).log(Level.SEVERE, "Ocurrio un problema al obtener la configuración.", ex);
             return "FAILED";
+        } finally {
+            DBUtils.limpiarRecursos(ps, rs, conn);
         }
         return "COMPLETED";
     }

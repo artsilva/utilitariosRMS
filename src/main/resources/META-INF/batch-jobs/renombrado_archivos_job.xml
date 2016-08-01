@@ -9,7 +9,10 @@ and open the template in the editor.
     <step id="obtener_configuracion" next="validaConfiguraciones">
         <batchlet ref="batchlet01ObtenerConfiguracion">
             <properties>
-            
+                <property name="jumbo" value="#{jobParameters['jumbo']}" />
+                <property name="unimarc" value="#{jobParameters['unimarc']}" />
+                <property name="lider" value="#{jobParameters['lider']}" />
+                <property name="tottus" value="#{jobParameters['tottus']}" />
             </properties>
         </batchlet>
         <fail on="FAILED" />
