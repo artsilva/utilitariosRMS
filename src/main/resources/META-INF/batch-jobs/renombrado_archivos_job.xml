@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<job id="renombrado_archivos_job" xmlns="http://xmlns.jcp.org/xml/ns/javaee" version="1.0">
+       
+    <step id="obtener_configuracion" next="validaConfiguraciones">
+        <batchlet ref="batchlet01ObtenerConfiguracion">
+            <properties>
+            
+            </properties>
+        </batchlet>
+        <fail on="FAILED" />
+    </step>
+    <step id="validaConfiguraciones" next="limpieza_de_recursos">
+        <batchlet ref="batchlet02RenombraArchivos"/>
+        <fail on="FAILED" />
+    </step>
+    <step id="limpieza_de_recursos">
+        <batchlet ref="cleanUpBatchlet" />
+        <fail on="FAILED" />
+    </step>
+</job>
