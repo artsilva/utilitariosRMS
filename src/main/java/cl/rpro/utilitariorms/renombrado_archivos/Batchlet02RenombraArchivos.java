@@ -41,6 +41,7 @@ public class Batchlet02RenombraArchivos extends AbstractBatchlet {
                 if (retailerSeleccionado.isSeleccionado()) {
                     for (ConfiguracionB2B configuracion : configuraciones) {
                         if (retailerSeleccionado.getNombreRetailer().equals(configuracion.getNombreRetailer())) {
+                            Logger.getLogger(Batchlet02RenombraArchivos.class.getName()).log(Level.INFO, "");
                             Logger.getLogger(Batchlet02RenombraArchivos.class.getName()).log(Level.INFO, "Retailer ejecutado: {0}", configuracion.getNombreRetailer());
                             
                             archivoDAO.validaRutaResp(configuracion);

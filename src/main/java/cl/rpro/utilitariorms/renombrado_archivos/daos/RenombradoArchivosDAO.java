@@ -53,16 +53,17 @@ public class RenombradoArchivosDAO {
 
         File[] files = new File(configuracion.getRutaZip()).listFiles();
 
-        for (File nombreArchivo : files) {
-            if (!nombreArchivo.getName().contains("RESP")) {
+        try {
 
-                source = nombreArchivo.toString();
-                carpetaInput = configuracion.getRutaInput();
-                carpetaResp = configuracion.getRutaResp();
+            for (File nombreArchivo : files) {
+                if (!nombreArchivo.getName().contains("RESP")) {
 
-                byte[] buffer = new byte[1024];
+                    source = nombreArchivo.toString();
+                    carpetaInput = configuracion.getRutaInput();
+                    carpetaResp = configuracion.getRutaResp();
 
-                try {
+                    byte[] buffer = new byte[1024];
+
                     //setea la ruta del zip
                     ZipInputStream origen = new ZipInputStream(new FileInputStream(source));
                     //obtiene los archivos contenidos dentro del zip
@@ -103,8 +104,6 @@ public class RenombradoArchivosDAO {
                     origen.closeEntry();
                     origen.close();
 
-                } catch (IOException ex) {
-                    Logger.getLogger(RenombradoArchivosDAO.class.getName()).log(Level.SEVERE, "Ocurrio un error al intentar descomprimir. ", ex);
                 }
                 try {
                     moverArchivoZIP(source, rutaRespMasZip);
@@ -112,7 +111,10 @@ public class RenombradoArchivosDAO {
                     Logger.getLogger(RenombradoArchivosDAO.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+        } catch (IOException ex) {
+            Logger.getLogger(RenombradoArchivosDAO.class.getName()).log(Level.SEVERE, "Ocurrio un error al intentar descomprimir. ", ex);
         }
+
     }
 
     public void moverArchivoZIP(String origen, String destino) throws Exception {

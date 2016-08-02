@@ -74,7 +74,7 @@ public class Batchlet01ObtenerConfiguracion extends AbstractBatchlet {
                 config.setRutaResp(rs.getString("ruta_zip_resp"));
                 config.setRutaInput(rs.getString("ruta_input"));
                 listaConfig.add(config);
-            }            
+            }
             rmsBean.setProperty("configuracion", listaConfig);
 
             List<RetailerSeleccionados> retailerSeleccionados = new ArrayList<>();
